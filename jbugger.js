@@ -118,7 +118,7 @@ function getBrowserInfo() {
              fullVersion: fullVersion,
              majorVersion: majorVersion,
              appName: navigator.appName,
-             userAgent = navigator.userAgent
+             userAgent: navigator.userAgent
          }
 }
 
@@ -132,24 +132,31 @@ function getOSInfo() {
     return { name: OSName };
 }
 
-function bugger(config) {
+function jbugger(config) {
 
     var config = typeof config !== "undefined" ? config: {};
 
     // make button
-    var elemDiv = document.createElement('div');
-    elem.innerHTML = '<a ref="#" id="buggerReport">Report an issue</a>';
-    elemDiv.style.cssText = 'position: fixed; bottom: 0px; right: 0px;';
-    document.body.appendChild(elemDiv); 
+    var elem = document.createElement('div');
+    elem.innerHTML = '<a href="#" id="buggerReport">Report an issue</a>';
+    elem.style.cssText = 'position: fixed; bottom: 0px; right: 0px; margin: 10px;';
+    document.body.appendChild(elem); 
 
     // click
-    elem.onClick = function(){
-        var browserInfo = getBrowserInfo();
-        var osInfo = getOSInfo();
+    elem.onclick = function(event){
+
+        // http://stackoverflow.com/a/128966/447661
+        event.preventDefault ? event.preventDefault() : event.returnValue = false;
+
+        var info = getBrowserInfo();
+        info.osInfo = getOSInfo().name;
+
+        console.log(info);
 
         // send request to server
-
     }
 
-    // text box 
+    // text box - ask for short description
 }
+
+window.onload = jbugger;
