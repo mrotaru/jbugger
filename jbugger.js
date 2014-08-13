@@ -149,12 +149,20 @@ function jbugger(config) {
     var form = document.createElement('form');
     form.id = typeof config.formId !== "undefined" ? config.formId : 'jbugger-form';
     form.style.cssText = typeof config.elCss !== "undefined" ? config.elCss: 'position: fixed; bottom: 15px; right: 0px; margin: 10px; display: none;';
-    form.innerHTML += '<textarea rows="3" cols="50" name="description" style="width: 100%;">Please describe the issue</textarea>';
+
+    // textarea
+    var textArea = document.createElement('textarea');
+    textArea.setAttribute('rows','3');
+    textArea.setAttribute('cols','50');
+    textArea.setAttribute('name','description');
+    textArea.style.cssText = 'width: 100%;';
+    textArea.value = 'Please describe the issue.';
+    form.appendChild(textArea);
     form.innerHTML += '<button id="jbugger-send">Send</button';
     form.innerHTML += '<button id="jbugger-cancel">Cancel</button';
     document.body.appendChild(form); 
 
-    // make button
+    // make 'report' button
     var elem = document.createElement('div');
     elem.id = typeof config.elemId !== "undefined" ? config.elemId : 'jbugger';
     elem.innerHTML = typeof config.elHtml !== "undefined" ? config.elHtml: '<a href="#" id="buggerReport">Report an issue</a>';
