@@ -132,14 +132,33 @@ function getOSInfo() {
     return { name: OSName };
 }
 
+/* config
+ *  url: where to submit form
+ *  headers: headers to be added to the Ajax request
+ *  elHtml: element html (default: '<a href="#" id="buggerReport">Report an issue</a>'
+ *  done: callback for finished successfully
+ *  error: callback for error
+ */
 function jbugger(config) {
 
     var config = typeof config !== "undefined" ? config: {};
+    var url = typeof config.url !== "undefined" ? config.url: '/';
+    var headers = typeof config.headers !== "undefined" ? config.headers: {};
+
+    // make form
+    var form = document.createElement('form');
+    form.id = typeof config.formId !== "undefined" ? config.formId : 'jbugger-form';
+    form.style.cssText = typeof config.elCss !== "undefined" ? config.elCss: 'position: fixed; bottom: 15px; right: 0px; margin: 10px; display: none;';
+    form.innerHTML += '<textarea rows="3" cols="50" name="description" style="width: 100%;">Please describe the issue</textarea>';
+    form.innerHTML += '<button id="jbugger-send">Send</button';
+    form.innerHTML += '<button id="jbugger-cancel">Cancel</button';
+    document.body.appendChild(form); 
 
     // make button
     var elem = document.createElement('div');
-    elem.innerHTML = '<a href="#" id="buggerReport">Report an issue</a>';
-    elem.style.cssText = 'position: fixed; bottom: 0px; right: 0px; margin: 10px;';
+    elem.id = typeof config.elemId !== "undefined" ? config.elemId : 'jbugger';
+    elem.innerHTML = typeof config.elHtml !== "undefined" ? config.elHtml: '<a href="#" id="buggerReport">Report an issue</a>';
+    elem.style.cssText = typeof config.elCss !== "undefined" ? config.elCss: 'position: fixed; bottom: 0px; right: 0px; margin: 10px;';
     document.body.appendChild(elem); 
 
     // click
@@ -152,6 +171,11 @@ function jbugger(config) {
         info.osInfo = getOSInfo().name;
 
         console.log(info);
+
+        // show form
+        form.style.display = 'block';
+
+        // serialize form
 
         // send request to server
     }
