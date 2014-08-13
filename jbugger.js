@@ -132,6 +132,7 @@ function getOSInfo() {
     return { name: OSName };
 }
 
+
 /* config
  *  url: where to submit form
  *  headers: headers to be added to the Ajax request
@@ -157,9 +158,32 @@ function jbugger(config) {
     textArea.setAttribute('name','description');
     textArea.style.cssText = 'width: 100%;';
     textArea.value = 'Please describe the issue.';
+    textArea.onfocus = function() { // from: http://stackoverflow.com/a/5797700/447661
+        textArea.select();
+
+        // Work around Chrome's little problem
+        textArea.onmouseup = function() {
+            // Prevent further mouseup intervention
+            textArea.onmouseup = null;
+            return false;
+        };
+    };
     form.appendChild(textArea);
-    form.innerHTML += '<button id="jbugger-send">Send</button';
-    form.innerHTML += '<button id="jbugger-cancel">Cancel</button';
+
+    var sendButton = document.createElement('button');
+    sendButton.id = 'jbugger-send';
+    sendButton.innerHTML = 'Send';
+    form.appendChild(sendButton);
+
+    var cancelButton = document.createElement('button');
+    cancelButton.id = 'jbugger-cancel';
+    cancelButton.innerHTML = 'Cancel';
+    cancelButton.onclick = function(event){
+        event.preventDefault ? event.preventDefault() : event.returnValue = false;
+        form.style.display = 'none';
+    };
+    form.appendChild(cancelButton);
+
     document.body.appendChild(form); 
 
     // make 'report' button
