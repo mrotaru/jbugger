@@ -176,7 +176,7 @@ function jbugger(config) {
     var sendButton = document.createElement('button');
     sendButton.id = 'jbugger-send';
     sendButton.innerHTML = 'Send';
-    sendButton.onClick = function(event){
+    sendButton.onclick = function(event){
         event.preventDefault ? event.preventDefault() : event.returnValue = false;
 
         // gather information to be sent
