@@ -28,7 +28,7 @@ ajax.send = function(url, callback, method, data, sync) {
     x.open(method, url, sync);
     x.onreadystatechange = function() {
         if (x.readyState == 4) {
-            callback(x.responseText)
+            callback(x.responseText,x.status)
         }
     };
     if (method == 'POST') {
@@ -51,6 +51,11 @@ ajax.post = function(url, data, callback, sync) {
         query.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));
     }
     ajax.send(url, callback, 'POST', query.join('&'), sync)
+};
+
+ajax.postJson = function(url, data, callback, sync) {
+    var _data = JSON.stringify(data);
+    ajax.send(url, callback, 'POST', _data, sync)
 };
 
 // from: http://stackoverflow.com/a/11219680/447661
@@ -178,6 +183,8 @@ function jbugger(config) {
     sendButton.innerHTML = 'Send';
     sendButton.onclick = function(event){
         event.preventDefault ? event.preventDefault() : event.returnValue = false;
+        var self = this;
+        this.disabled = true;
 
         // gather information to be sent
         var info = getBrowserInfo();
@@ -187,7 +194,24 @@ function jbugger(config) {
         }
         info.description = document.getElementById('jbugger-textarea').value;
 
-        console.log(info);
+        var data = JSON.stringify(info, null, 2);
+        
+        // callback
+        var cb = function(responseText, status){
+            self.disabled = false;
+            if(status == "200") {
+                alert("Message sent. Thank you for your feedback.");
+            } else {
+                alert("Error sending message");
+            }
+        };
+
+        // post data
+        ajax.postJson(url, data, cb, false);
+
+        this.disabled = false;
+
+        form.style.display = 'none';
     };
     form.appendChild(sendButton);
 
