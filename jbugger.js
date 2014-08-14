@@ -28,13 +28,17 @@ ajax.send = function(url, callback, method, data, sync) {
     x.open(method, url, sync);
     x.onreadystatechange = function() {
         if (x.readyState == 4) {
-            callback(x.responseText,x.status)
+            callback(x.responseText,x)
         }
     };
     if (method == 'POST') {
         x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    }
-    x.send(data)
+    };
+    try {
+        x.send(data);
+    } catch(err) {
+        callback(err);
+    };
 };
 
 ajax.get = function(url, data, callback, sync) {
@@ -197,12 +201,18 @@ function jbugger(config) {
         var data = JSON.stringify(info, null, 2);
         
         // callback
-        var cb = function(responseText, status){
+        var cb = function(response){
+            alert("callback");
             self.disabled = false;
-            if(status == "200") {
+            console.log(response);
+            if(response.status == "200") {
                 alert("Message sent. Thank you for your feedback.");
             } else {
-                alert("Error sending message");
+                if(response.message) {
+                    alert("Error sending message: " + response.message);
+                } else {
+                    alert("Error sending message.");
+                }
             }
         };
 
@@ -238,6 +248,7 @@ function jbugger(config) {
     elem.onclick = function(event){
         event.preventDefault ? event.preventDefault() : event.returnValue = false;
         form.style.display = 'block';
+        sendButton.disabled = false;
     }
 }
 
