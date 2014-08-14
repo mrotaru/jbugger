@@ -150,6 +150,7 @@ function jbugger(config) {
     var form = document.createElement('form');
     form.id = typeof config.formId !== "undefined" ? config.formId : 'jbugger-form';
     form.style.cssText = typeof config.elCss !== "undefined" ? config.elCss: 'position: fixed; bottom: 15px; right: 0px; margin: 10px; display: none;';
+    if(typeof config.addCss !== "undefined") form.style.cssText += config.addCss;
 
     // textarea
     var textArea = document.createElement('textarea');
@@ -215,4 +216,10 @@ function jbugger(config) {
     // text box - ask for short description
 }
 
-window.onload = jbugger;
+window.onload = function(){
+    if(typeof window.jbuggerConfig !== 'undefined'){
+        jbugger(jbuggerConfig);
+    } else {
+        jbugger();
+    }
+}
