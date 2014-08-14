@@ -154,6 +154,7 @@ function jbugger(config) {
 
     // textarea
     var textArea = document.createElement('textarea');
+    textArea.id = 'jbugger-textarea';
     textArea.setAttribute('rows','3');
     textArea.setAttribute('cols','50');
     textArea.setAttribute('name','description');
@@ -171,11 +172,26 @@ function jbugger(config) {
     };
     form.appendChild(textArea);
 
+    // 'Send' button
     var sendButton = document.createElement('button');
     sendButton.id = 'jbugger-send';
     sendButton.innerHTML = 'Send';
+    sendButton.onClick = function(event){
+        event.preventDefault ? event.preventDefault() : event.returnValue = false;
+
+        // gather information to be sent
+        var info = getBrowserInfo();
+        info.osInfo = getOSInfo().name;
+        if(typeof config.customInfo !== 'undefined'){
+            info.customInfo = config.customInfo();
+        }
+        info.description = document.getElementById('jbugger-textarea').value;
+
+        console.log(info);
+    };
     form.appendChild(sendButton);
 
+    // 'Cancel' button
     var cancelButton = document.createElement('button');
     cancelButton.id = 'jbugger-cancel';
     cancelButton.innerHTML = 'Cancel';
@@ -194,29 +210,11 @@ function jbugger(config) {
     elem.style.cssText = typeof config.elCss !== "undefined" ? config.elCss: 'position: fixed; bottom: 0px; right: 0px; margin: 10px;';
     document.body.appendChild(elem); 
 
-    // click
+    // click - show form
     elem.onclick = function(event){
-
-        // http://stackoverflow.com/a/128966/447661
         event.preventDefault ? event.preventDefault() : event.returnValue = false;
-
-        var info = getBrowserInfo();
-        info.osInfo = getOSInfo().name;
-        if(typeof config.customInfo !== 'undefined'){
-            info.customInfo = config.customInfo();
-        }
-
-        console.log(info);
-
-        // show form
         form.style.display = 'block';
-
-        // serialize form
-
-        // send request to server
     }
-
-    // text box - ask for short description
 }
 
 window.onload = function(){
