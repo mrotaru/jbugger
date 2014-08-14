@@ -202,6 +202,9 @@ function jbugger(config) {
 
         var info = getBrowserInfo();
         info.osInfo = getOSInfo().name;
+        if(typeof config.customInfo !== 'undefined'){
+            info.customInfo = config.customInfo();
+        }
 
         console.log(info);
 
