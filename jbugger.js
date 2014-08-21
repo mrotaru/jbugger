@@ -1,35 +1,48 @@
 // ajax without jquery; from: http://stackoverflow.com/a/18078705/447661
 var ajax = function(options){
-    var options = options || {};
-    var method = options.method || 'GET';
-    var sync   = options.sync   || false;
-    var url    = options.url    || window.location.pathname;
-    var done   = options.done   || function(){};
-    var fail   = options.fail   || function(){};
-    var data   = options.data   || null;
-    var type   = options.type   || 'json';
+    var options     = options               || {};
+    var method      = options.method        || 'GET';
+    var sync        = options.sync          || false;
+    var url         = options.url           || window.location.pathname;
+    var data        = options.data          || null;
+    var type        = options.type          || 'json';
+    var done        = options.done          || function(){};
+    var fail        = options.fail          || function(){};
+    var complete    = options.complete      || function(){};
+    var beforeSend  = options.beforeSend    || function(){};
 
     try {
         xhr = new XMLHttpRequest();
     } catch ( e ) {
-        return fail(e);
+        return _fail(e);
+    }
+
+    function _done(data){
+        done(data);
+        complete(data,'success');
+    }
+
+    function _fail(err){
+        fail(data);
+        complete(data,'error');
     }
 
     xhr.open(method, url, sync);
+    beforeSend(xhr);
     xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
             if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304) {
                 if(type === 'json' && method === 'GET') {
                     try {
-                        return done(JSON.parse(xhr.responseText));
+                        _done(JSON.parse(xhr.responseText));
                     } catch (err) {
-                        return fail(err);
+                        _fail(err);
                     }
                 } else {
-                    return done(xhr);
+                    _done(xhr);
                 }
             } else {
-                return fail('http return code: ' + xhr.status);
+                _fail('http return code: ' + xhr.status);
             }
         }
     };
@@ -51,13 +64,13 @@ var ajax = function(options){
         }
         data = objectToQueryString(data);
     } else {
-        return fail('Type not supported: ' + type);
+        return _fail('Type not supported: ' + type);
     }
 
     try {
         xhr.send(method === 'GET' ? null : data);
     } catch(err) {
-        return fail(err);
+        return _fail(err);
     }
 }
 
@@ -199,24 +212,6 @@ function jbugger(config) {
 
         var data = JSON.stringify(info, null, 2);
         
-        // callback
-        var cb = function(response, error){
-            self.disabled = false;
-            if(response === 'error') {
-                alert('Error sending message: ' + error );
-                return false;
-            }
-            if(response.status == "200") {
-                alert("Message sent. Thank you for your feedback.");
-            } else {
-                if(response.message) {
-                    alert("Error sending message: " + response.message);
-                } else {
-                    alert("Error sending message.");
-                }
-            }
-        };
-
         // post data
         ajax({
             url: url,
@@ -227,10 +222,11 @@ function jbugger(config) {
             },
             fail: function(err){
                 alert('Could not send report: ' + err);
+            },
+            complete: function(){
+                self.disabled = false;
             }
         });
-
-        this.disabled = false;
 
         form.style.display = 'none';
     };
