@@ -184,8 +184,8 @@ function jbugger(config) {
     var sendButton = document.createElement('button');
     sendButton.id = 'jbugger-send';
     sendButton.innerHTML = 'Send';
-    sendButton.onclick = function(event){
-        event.preventDefault ? event.preventDefault() : event.returnValue = false;
+    sendButton.onclick = function(e){
+        e ? e.preventDefault() : window.event.returnValue = false;
         var self = this;
         this.disabled = true;
 
@@ -200,10 +200,12 @@ function jbugger(config) {
         var data = JSON.stringify(info, null, 2);
         
         // callback
-        var cb = function(response){
-            alert("callback");
+        var cb = function(response, error){
             self.disabled = false;
-            console.log(response);
+            if(response === 'error') {
+                alert('Error sending message: ' + error );
+                return false;
+            }
             if(response.status == "200") {
                 alert("Message sent. Thank you for your feedback.");
             } else {
@@ -238,8 +240,8 @@ function jbugger(config) {
     var cancelButton = document.createElement('button');
     cancelButton.id = 'jbugger-cancel';
     cancelButton.innerHTML = 'Cancel';
-    cancelButton.onclick = function(event){
-        event.preventDefault ? event.preventDefault() : event.returnValue = false;
+    cancelButton.onclick = function(e){
+        e ? e.preventDefault() : window.event.returnValue = false;
         form.style.display = 'none';
     };
     form.appendChild(cancelButton);
@@ -254,8 +256,9 @@ function jbugger(config) {
     document.body.appendChild(elem); 
 
     // click - show form
-    elem.onclick = function(event){
-        event.preventDefault ? event.preventDefault() : event.returnValue = false;
+    elem.onclick = function(e){
+        var args = Array.prototype.slice.call(arguments);
+        e ? e.preventDefault() : window.event.returnValue = false;
         form.style.display = 'block';
         sendButton.disabled = false;
     }
