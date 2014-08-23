@@ -143,6 +143,21 @@ function getBrowserInfo() {
          }
 }
 
+
+// http://stackoverflow.com/a/11744120/447661
+function getViewportInfo() {
+    var w = window,
+    d = document,
+    e = d.documentElement,
+    g = d.getElementsByTagName('body')[0],
+    viewportWidth = w.innerWidth || e.clientWidth || g.clientWidth,
+    viewportHeight = w.innerHeight|| e.clientHeight|| g.clientHeight;
+    return {
+        width: viewportWidth,
+        height: viewportHeight
+    }
+}
+
 function getOSInfo() {
     var OSName="Unknown OS";
     if (navigator.appVersion.indexOf("Win")!=-1) OSName="Windows";
@@ -210,6 +225,10 @@ function jbugger(config) {
         }
         info.description = document.getElementById('jbugger-textarea').value;
 
+        var viewportInfo = getViewportInfo();
+        info.viewportWidth = viewportWidth.width;
+        info.viewportHeight = viewportHeight.height;
+
         var data = JSON.stringify(info, null, 2);
         
         // post data
@@ -225,6 +244,7 @@ function jbugger(config) {
             },
             complete: function(){
                 self.disabled = false;
+                return false;
             }
         });
 
