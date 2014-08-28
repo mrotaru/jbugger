@@ -56,11 +56,11 @@ var ajax = function(options){
     }
 
     if (type === 'json') {
-        data = JSON.stringify(data);
-        xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
+//        data = JSON.stringify(data);
+        xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
     } else if (type === 'uri') {
         if (method === 'POST') {
-            xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         }
         data = objectToQueryString(data);
     } else {
@@ -68,9 +68,10 @@ var ajax = function(options){
     }
 
     try {
-        xhr.send(method === 'GET' ? null : data);
+        var _data = method === 'GET' ? null : data;
+        xhr.send(_data);
     } catch(err) {
-        return _fail(err);
+        return _fail('Send error: ' + err);
     }
 }
 
@@ -135,10 +136,9 @@ function getBrowserInfo() {
          }
 
          return {
-             name: browserName,
-             fullVersion: fullVersion,
-             majorVersion: majorVersion,
-             appName: navigator.appName,
+             browserName: browserName,
+             browserVersion: fullVersion,
+             browserMajorVersion: majorVersion,
              userAgent: navigator.userAgent
          }
 }
@@ -219,15 +219,16 @@ function jbugger(config) {
 
         // gather information to be sent
         var info = getBrowserInfo();
-        info.osInfo = getOSInfo().name;
+        info.osName = getOSInfo().name;
         if(typeof config.customInfo !== 'undefined'){
             info.customInfo = config.customInfo();
         }
+        info.url = document.URL;
         info.description = document.getElementById('jbugger-textarea').value;
 
         var viewportInfo = getViewportInfo();
-        info.viewportWidth = viewportWidth.width;
-        info.viewportHeight = viewportHeight.height;
+        info.viewportWidth = viewportInfo.width;
+        info.viewportHeight = viewportInfo.height;
 
         var data = JSON.stringify(info, null, 2);
         
@@ -235,6 +236,7 @@ function jbugger(config) {
         ajax({
             url: url,
             type: 'json',
+            method: 'POST',
             data: data,
             done: function(xhr){
                 alert('Report sent.');
