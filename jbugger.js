@@ -221,7 +221,10 @@ function jbugger(config) {
         var info = getBrowserInfo();
         info.osName = getOSInfo().name;
         if(typeof config.customInfo !== 'undefined'){
-            info.customInfo = config.customInfo();
+            var customInfo = config.customInfo();
+            for(var customInfoItem in customInfo){
+                info[customInfoItem] = customInfo[customInfoItem];
+            }
         }
         info.url = document.URL;
         info.description = document.getElementById('jbugger-textarea').value;
